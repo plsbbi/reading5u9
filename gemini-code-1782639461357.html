@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ms Lê Hằng English - IELTS Reading Interactive Practice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Quicksand:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8854C0;
+            --primary-light: #FFD2E5;
+            --secondary: #FDCB6E;
+            --accent: #00C9A7;
+            --bg-correct: #00D26A;
+            --bg-wrong: #FF4757;
+            --text-dark: #2D3436;
+            --panel-left-bg: #FFFBFD;
+            --panel-right-bg: #F6F0FC;
+            --border-radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', 'Nunito', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #FFD2E5, #FFF0F5, #E8D7F1, #FFEAA7);
+            background-size: 400% 400%;
+            animation: gradientBgMove 14s ease infinite;
+            color: var(--text-dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientBgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.96);
+            padding: 8px 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            border-bottom: 4px solid var(--primary-light);
+        }
+
+        .header-brand h2 {
+            font-size: 11px;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 900;
+        }
+
+        .header-brand h1 {
+            font-size: 17px;
+            color: var(--text-dark);
+            font-weight: 900;
+        }
+
+        .timer-panel {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-box {
+            background: #FFE3EE;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-weight: 900;
+            font-size: 16px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 3px 0 var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-timer {
+            background: var(--secondary);
+            border: 2px solid var(--text-dark);
+            padding: 6px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 12px;
+            box-shadow: 0 3px 0 var(--text-dark);
+        }
+
+        .global-progress {
+            height: 8px;
+            background: #EAEAEA;
+            width: 100%;
+            position: relative;
+            z-index: 5;
+        }
+
+        .global-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--bg-correct));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        /* TOP NAVIGATION BAR WITH EXERCISE ICONS */
+        .exercise-nav-bar {
+            display: flex;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 20px;
+            gap: 10px;
+            overflow-x: auto;
+            z-index: 4;
+            border-bottom: 2px solid #EAEAEA;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .nav-tab-btn {
+            background: #FFF;
+            border: 2px solid var(--text-dark);
+            padding: 8px 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 0 var(--text-dark);
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .nav-tab-btn:hover {
+            transform: translateY(-1px);
+            background: var(--primary-light);
+        }
+
+        .nav-tab-btn.active {
+            background: var(--primary);
+            color: #FFF;
+            border-color: var(--primary);
+            box-shadow: 0 3px 0 #4A148C;
+        }
+
+        .workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        .exercise-view-block {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        .exercise-view-block.active {
+            display: flex;
+        }
+
+        .split-left, .split-right {
+            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+            padding: 25px;
+            scroll-behavior: smooth;
+        }
+
+        .split-left {
+            background: var(--panel-left-bg);
+            border-right: 3px dashed #FFD2E5;
+        }
+
+        .split-right {
+            background: var(--panel-right-bg);
+        }
+
+        .passage-title {
+            font-size: 20px;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-weight: 900;
+            border-bottom: 4px solid var(--secondary);
+            padding-bottom: 5px;
+        }
+
+        .section-content-box {
+            background: #FFF;
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.01);
+            border-left: 5px solid var(--primary);
+        }
+
+        .section-content-box h3 {
+            margin-bottom: 10px;
+            color: #4A148C;
+            font-size: 16px;
+        }
+
+        .paragraph-text {
+            line-height: 1.75;
+            font-size: 15.5px;
+            color: #333;
+        }
+
+        .highlight-pastel {
+            background-color: #FFD2E5 !important;
+            border-radius: 4px;
+            padding: 1px 2px;
+        }
+
+        .btn-translate-toggle {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 2px solid #A5D6A7;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 700;
+        }
+
+        .vietnamese-translation-box {
+            display: none;
+            margin-top: 12px;
+            padding: 14px;
+            background: #FFFDE7;
+            border-left: 4px solid #FBC02D;
+            border-radius: 10px;
+            font-style: italic;
+            color: #5D4037;
+            font-size: 14.5px;
+            line-height: 1.65;
+        }
+
+        .exercise-card {
+            background: #FFF;
+            border: 2px solid var(--text-dark);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 0 var(--text-dark);
+            transition: var(--transition);
+        }
+
+        .badge-number {
+            background: var(--primary);
+            color: #FFF;
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 11px;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .option-node {
+            background: #FFF;
+            border: 2px solid #EAEAEA;
+            padding: 12px 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14.5px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 3px 0 #EAEAEA;
+            transition: all 0.2s;
+        }
+
+        .option-node:hover {
+            transform: scale(1.01);
+            border-color: var(--primary);
+        }
+
+        .option-node.correct {
+            background-color: #E8F5E9 !important;
+            border-color: var(--bg-correct) !important;
+            box-shadow: 0 3px 0 var(--bg-correct) !important;
+            color: #1B5E20;
+        }
+
+        .option-node.incorrect {
+            background-color: #FFEBEE !important;
+            border-color: var(--bg-wrong) !important;
+            box-shadow: 0 3px 0 var(--bg-wrong) !important;
+            color: #B71C1C;
+        }
+
+        .gamified-dropdown {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--text-dark);
+            border-radius: 14px;
+            background: #FFF;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 3px 0 var(--text-dark);
+            outline: none;
+            margin-top: 10px;
+        }
+
+        .explanation-panel {
+            display: none;
+            margin-top: 15px;
+            padding: 16px;
+            background: #FFFEE4;
+            border-radius: 12px;
+            border: 2px solid #FBC02D;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .explanation-panel h4 {
+            color: #B78A00;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+
+        .btn-locate-evidence {
+            background: #E1F5FE;
+            color: #0288D1;
+            border: 1px solid #B3E5FC;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 8px;
+            font-weight: 700;
+        }
+
+        .sticky-footer {
+            position: fixed;
+            bottom: 20px;
+            right: 35px;
+            z-index: 100;
+        }
+
+        .btn-global-submit {
+            background: #FF4757;
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            padding: 14px 40px;
+            border-radius: 30px;
+            border: 3px solid #000;
+            box-shadow: 0 6px 0 #000;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-global-submit:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #000;
+        }
+
+        .shake-animation {
+            animation: cardShake 0.4s;
+        }
+
+        @keyframes cardShake {
+            0%, 100% { transform: translateX(0); }
+            25%, 75% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+        }
+
+        #dashboard-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-body {
+            background: white;
+            border: 4px solid var(--text-dark);
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 12px 0 var(--text-dark);
+        }
+
+        .score-badge {
+            width: 120px;
+            height: 120px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            font-size: 32px;
+            font-weight: 900;
+            border: 4px solid var(--text-dark);
+            box-shadow: 0 5px 0 var(--text-dark);
+        }
+
+        .btn-close-dashboard {
+            background: var(--accent);
+            color: white;
+            border: 2px solid var(--text-dark);
+            padding: 10px 25px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 0 var(--text-dark);
+        }
+
+        canvas#confetti-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confetti-layer"></canvas>
+
+    <header>
+        <div class="header-brand">
+            <h2>Ms Lê Hằng English</h2>
+            <h1>IELTS READING MOCK TEST</h1>
+        </div>
+        <div class="timer-panel">
+            <div class="timer-box">
+                ⏱️ <span id="clock-view">25:00</span>
+            </div>
+            <button class="btn-timer" id="timer-toggle-btn" onclick="triggerClockSystem()">BẮT ĐẦU TÍNH GIỜ</button>
+        </div>
+    </header>
+
+    <div class="global-progress">
+        <div class="global-progress-bar" id="master-progress-fill"></div>
+    </div>
+
+    <div class="exercise-nav-bar" id="top-nav-bar">
+        <button class="nav-tab-btn active" onclick="activateSection(1)">🍳 Ex 13.1 - Culinary</button>
+        <button class="nav-tab-btn" onclick="activateSection(2)">💼 Ex 13.2 - Workshop</button>
+        <button class="nav-tab-btn" onclick="activateSection(3)">✈️ Ex 14.1 - Ji-ho Project</button>
+        <button class="nav-tab-btn" onclick="activateSection(4)">🏀 Ex 14.2 - Maria Game</button>
+        <button class="nav-tab-btn" onclick="activateSection(5)">🏡 Ex 14.3 - Countryside</button>
+        <button class="nav-tab-btn" onclick="activateSection(6)">🌌 Ex 15.1 - Astronomy</button>
+        <button class="nav-tab-btn" onclick="activateSection(7)">🐹 Ex 15.2 - Maya Schedule</button>
+        <button class="nav-tab-btn" onclick="activateSection(8)">🇬🇧 Ex 15.3 - London Trip</button>
+        <button class="nav-tab-btn" onclick="activateSection(9)">🦁 Ex 16.1 - Singapore Course</button>
+        <button class="nav-tab-btn" onclick="activateSection(10)">🗣️ Ex 16.2 - Public Speaking</button>
+    </div>
+
+    <div class="workspace">
+        
+        <div id="section-zone-1" class="exercise-view-block active">
+            <div class="split-left">
+                <h2 class="passage-title">🍳 Fuel Your Passion for Food</h2>
+                <div class="section-content-box" id="ex131-passage-box">
+                    <h3>Title: Share Your Culinary Creations!</h3>
+                    <p class="paragraph-text">Have you cooked (1) ______ delicious meal lately? Tell us about your culinary adventures and what you (2) _______! Whether you have baked a mouthwatering dessert or mastered a complex recipe, we want to hear (3) _____ you.<br><br>Join us at 123TTT.com and share your photos and tips. Inspire others with your culinary journey and help them (4) ______ new dishes to try!</p>
+                    <button class="btn-translate-toggle" onclick="toggleTranslationBox('ex131-trans')">BẢN DỊCH TIẾNG VIỆT 🌟</button>
+                    <div class="vietnamese-translation-box" id="ex131-trans">Gần đây bạn có nấu một bữa ăn ngon nào không? Hãy kể cho chúng tôi về những chuyến phiêu lưu ẩm thực của bạn và những gì bạn đã tạo ra! Cho dù bạn đã nướng một món tráng miệng ngon lành hay thành thạo một công thức phức tạp, chúng tôi đều muốn lắng nghe bạn. Hãy tham gia cùng chúng tôi tại 123TTT.com để chia sẻ hình ảnh và mẹo của bạn!</div>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q131_1-card">
+                    <span class="badge-number">Câu hỏi 1</span>
+                    <p class="paragraph-text">Chọn đáp án thích hợp điền vào vị trí (1):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q131_1', 'A', this)">A. a</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q131_1', 'A', this)">B. the</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q131_1', 'A', this)">C. no article</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q131_1', 'A', this)">D. an</div>
+                    </div>
+                    <div class="explanation-panel" id="q131_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Dẫn chứng:</strong> "...cooked (1) a delicious meal..."</p>
+                        <p><strong>Giải thích chi tiết:</strong> "delicious meal" là danh từ số ít đếm được, lần đầu tiên xuất hiện mang tính khái quát nên bắt buộc dùng mạo từ "a". Loại "an" vì bắt đầu bằng phụ âm /d/.</p>
+                        <button class="btn-locate-evidence" onclick="locatePassageElement('ex131-passage-box')">📍 Vị trí dẫn chứng</button>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q131_2-card">
+                    <span class="badge-number">Câu hỏi 2</span>
+                    <p class="paragraph-text">Chọn đáp án thích hợp điền vào vị trí (2):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q131_2', 'B', this)">A. creating</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q131_2', 'B', this)">B. have created</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q131_2', 'B', this)">C. create</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q131_2', 'B', this)">D. will create</div>
+                    </div>
+                    <div class="explanation-panel" id="q131_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích chi tiết:</strong> Trạng từ "lately" (gần đây) ở câu đầu tiên chính là dấu hiệu của thì Hiện tại hoàn thành (Present Perfect). Do đó hành động biểu đạt kinh nghiệm sáng tạo món ăn phải chia là "have created".</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q131_3-card">
+                    <span class="badge-number">Câu hỏi 3</span>
+                    <p class="paragraph-text">Chọn đáp án thích hợp điền vào vị trí (3):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q131_3', 'C', this)">A. for</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q131_3', 'C', this)">B. with</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q131_3', 'C', this)">C. from</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q131_3', 'C', this)">D. to</div>
+                    </div>
+                    <div class="explanation-panel" id="q131_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Giải thích chi tiết:</strong> Cấu trúc cụm từ đi kèm giới từ (Collocation): "hear from someone" nghĩa là nhận tin tức, lắng nghe câu chuyện hoặc nhận phản hồi từ ai đó.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q131_4-card">
+                    <span class="badge-number">Câu hỏi 4</span>
+                    <p class="paragraph-text">Chọn đáp án thích hợp điền vào vị trí (4):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q131_4', 'A', this)">A. discover</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q131_4', 'A', this)">B. discovery</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q131_4', 'A', this)">C. discoverer</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q131_4', 'A', this)">D. discoverable</div>
+                    </div>
+                    <div class="explanation-panel" id="q131_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích chi tiết:</strong> Cấu trúc động từ: "help someone do/to do something" (giúp ai đó làm gì). Sau tân ngữ "them" ta cần một động từ nguyên mẫu không "to" $\rightarrow$ chọn "discover". Các từ còn lại là danh từ và tính từ.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-zone-2" class="exercise-view-block">
+            <div class="split-left">
+                <h2 class="passage-title">💼 Career Workshop Invitation</h2>
+                <div class="section-content-box" id="ex132-passage-box">
+                    <h3>Announcement: Career Workshop</h3>
+                    <p class="paragraph-text">Hello everyone!<br>We're (1) _____ to invite you to a special Career Workshop (2) _____ October 5th!<br><br>🕒 Time: 2:00 PM - 4:00 PM<br>📍 Location: Community Center, 456 Main Street, District 3<br><br>Come learn from (3) _____ professionals! They'll share tips on finding jobs, writing resumes, and succeeding in interviews. Don't miss this chance to (4) ______ great career advice.<br><br>🎟️ Sign up now at 123TTT.com<br>See you there!<br>The Workshop Team</p>
+                    <button class="btn-translate-toggle" onclick="toggleTranslationBox('ex132-trans')">BẢN DỊCH TIẾNG VIỆT 🌟</button>
+                    <div class="vietnamese-translation-box" id="ex132-trans">Chào mọi người! Chúng tôi rất vui mừng được mời bạn tham dự Hội thảo Nghề nghiệp đặc biệt vào ngày 5 tháng 10! Hãy đến học hỏi từ các chuyên gia giàu kinh nghiệm! Họ sẽ chia sẻ các mẹo tìm việc, viết CV và thành công khi phỏng vấn. Đăng ký ngay tại 123TTT.com!</div>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q132_1-card">
+                    <span class="badge-number">Câu hỏi 1</span>
+                    <p class="paragraph-text">Chọn từ thích hợp điền vào chỗ trống (1):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q132_1', 'A', this)">A. happy</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q132_1', 'A', this)">B. happiness</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q132_1', 'A', this)">C. happily</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q132_1', 'A', this)">D. unhappy</div>
+                    </div>
+                    <div class="explanation-panel" id="q132_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích:</strong> Đứng sau động từ tobe "We're" cần một tính từ miêu tả trạng thái/cảm xúc tích cực khi đưa ra lời mời $\rightarrow$ chọn "happy".</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q132_2-card">
+                    <span class="badge-number">Câu hỏi 2</span>
+                    <p class="paragraph-text">Chọn từ thích hợp điền vào chỗ trống (2):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q132_2', 'B', this)">A. in</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q132_2', 'B', this)">B. on</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q132_2', 'B', this)">C. to</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q132_2', 'B', this)">D. at</div>
+                    </div>
+                    <div class="explanation-panel" id="q132_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Quy tắc mốc thời gian: Đứng trước một ngày cụ thể trong tháng có cả ngày lẫn tháng (October 5th) ta bắt buộc dùng giới từ "on".</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q132_3-card">
+                    <span class="badge-number">Câu hỏi 3</span>
+                    <p class="paragraph-text">Chọn từ thích hợp điền vào chỗ trống (3):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q132_3', 'B', this)">A. embarrassing</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q132_3', 'B', this)">B. experienced</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q132_3', 'B', this)">C. memorable</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q132_3', 'B', this)">D. thrilling</div>
+                    </div>
+                    <div class="explanation-panel" id="q132_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> "experienced professionals" nghĩa là những chuyên gia có bề dày kinh nghiệm, cực kỳ phù hợp ngữ cảnh của một lớp đào tạo kỹ năng xin việc.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q132_4-card">
+                    <span class="badge-number">Câu hỏi 4</span>
+                    <p class="paragraph-text">Chọn từ thích hợp điền vào chỗ trống (4):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q132_4', 'C', this)">A. do</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q132_4', 'C', this)">B. put</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q132_4', 'C', this)">C. get</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q132_4', 'C', this)">D. take</div>
+                    </div>
+                    <div class="explanation-panel" id="q132_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Giải thích:</strong> Cụm kết hợp từ cố định (Collocation): "get career advice" nghĩa là nhận được lời khuyên định hướng nghề nghiệp.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-zone-3" class="exercise-view-block">
+            <div class="split-left">
+                <h2 class="passage-title">✈️ Ji-ho's Life-changing Journey</h2>
+                <div class="section-content-box" id="ex141-passage-box">
+                    <p class="paragraph-text">Ji-ho, an English teacher from Daegu, Korea, embarked on a life-changing journey last year when he (1) _________ the Teaching Volunteer Project in Cape Town, South Africa. This project, organized by International Volunteer HQ, empowers volunteers like Ji-ho to help local elementary schools by giving enthusiastic (2) _______ to students in entry-level classes.<br><br>Schools in low-income communities often have very few teachers, so volunteers like Ji-ho are very important. His days were filled (3) _________ engaging activities as he assisted teachers with lesson plans, led small group sessions, and interacted with students, helping them improve their English skills. (4) _________, he also had time to explore Cape Town. He tried the local cuisine and visited the city’s historical landmarks and breathtaking natural landscapes. Besides, he also made new friends with fellow volunteers, creating lasting friendships and forming a strong support network.<br><br>Ji-ho really had a memorable time in Cape Town. He (5) _________ considerable teaching experience, made a positive impact on the lives of students, and discovered a deeper appreciation for different (6) _________ and ways of life. The trip made him realize how important it is to volunteer and experience the joy of connecting with others.</p>
+                    <button class="btn-translate-toggle" onclick="toggleTranslationBox('ex141-trans')">BẢN DỊCH TIẾNG VIỆT 🌟</button>
+                    <div class="vietnamese-translation-box" id="ex141-trans">Ji-ho, một giáo viên tiếng Anh từ Daegu, Hàn Quốc, đã bắt đầu một hành trình thay đổi cuộc đời vào năm ngoái khi anh tham gia Dự án Tình nguyện Giảng dạy tại Cape Town, Nam Phi... Anh ấy đã tích lũy được kinh nghiệm giảng dạy đáng kể, tạo tác động tích cực đến cuộc sống học sinh và hiểu sâu sắc hơn về các nền văn hóa khác nhau.</div>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q141_1-card">
+                    <span class="badge-number">Câu hỏi 1</span>
+                    <p class="paragraph-text">Điền vào vị trí (1):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q141_1', 'D', this)">A. included</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q141_1', 'D', this)">B. volunteered</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q141_1', 'D', this)">C. lasted</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q141_1', 'D', this)">D. joined</div>
+                    </div>
+                    <div class="explanation-panel" id="q141_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: D</h4>
+                        <p><strong>Giải thích:</strong> "join a project/campaign" là colocation chuẩn mang nghĩa gia nhập, tham gia vào một chiến dịch hoặc một dự án tình nguyện.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q141_2-card">
+                    <span class="badge-number">Câu hỏi 2</span>
+                    <p class="paragraph-text">Điền vào vị trí (2):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q141_2', 'A', this)">A. support</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q141_2', 'A', this)">B. course</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q141_2', 'A', this)">C. project</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q141_2', 'A', this)">D. theme</div>
+                    </div>
+                    <div class="explanation-panel" id="q141_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích:</strong> "give enthusiastic support to students" mang ý nghĩa là mang lại/trao đi sự hỗ trợ nhiệt thành dành cho các em học sinh.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q141_3-card">
+                    <span class="badge-number">Câu hỏi 3</span>
+                    <p class="paragraph-text">Điền vào vị trí (3):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q141_3', 'A', this)">A. with</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q141_3', 'A', this)">B. in</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q141_3', 'A', this)">C. out</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q141_3', 'A', this)">D. on</div>
+                    </div>
+                    <div class="explanation-panel" id="q141_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích:</strong> Cấu trúc bị động tính từ cố định: "be filled with something" nghĩa là được lấp đầy, ngập tràn bởi cái gì.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q141_4-card">
+                    <span class="badge-number">Câu hỏi 4</span>
+                    <p class="paragraph-text">Điền vào vị trí (4):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q141_4', 'C', this)">A. Otherwise</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q141_4', 'C', this)">B. Therefore</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q141_4', 'C', this)">C. However</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q141_4', 'C', this)">D. Yet</div>
+                    </div>
+                    <div class="explanation-panel" id="q141_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Giải thích:</strong> Trạng từ liên kết đứng đầu câu thể hiện quan hệ tương phản (bận rộn làm việc nhưng vẫn có thời gian khám phá thành phố), có dấu phẩy đi kèm $\rightarrow$ dùng "However".</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q141_5-card">
+                    <span class="badge-number">Câu hỏi 5</span>
+                    <p class="paragraph-text">Điền vào vị trí (5):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q141_5', 'B', this)">A. enlarged</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q141_5', 'B', this)">B. gained</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q141_5', 'B', this)">C. performed</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q141_5', 'B', this)">D. created</div>
+                    </div>
+                    <div class="explanation-panel" id="q141_5-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Collocation cao cấp chuẩn IELTS: "gain experience" (gặt hái, tích lũy được kinh nghiệm giảng dạy).</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q141_6-card">
+                    <span class="badge-number">Câu hỏi 6</span>
+                    <p class="paragraph-text">Điền vào vị trí (6):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q141_6', 'D', this)">A. societies</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q141_6', 'D', this)">B. activities</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q141_6', 'D', this)">C. attitudes</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q141_6', 'D', this)">D. cultures</div>
+                    </div>
+                    <div class="explanation-panel" id="q141_6-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: D</h4>
+                        <p><strong>Giải thích:</strong> Cấu trúc song hành với "ways of life" (lối sống) thông qua từ nối "and" $\rightarrow$ chọn danh từ "cultures" (các nền văn hóa).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-zone-4" class="exercise-view-block">
+            <div class="split-left">
+                <h2 class="passage-title">🏀 Maria's Basketball Championship</h2>
+                <div class="section-content-box" id="ex142-passage-box">
+                    <p class="paragraph-text">Maria clutched her basketball jersey, her heart hammering against her ribs. Today was the championship game, and the tension was thick (1) ______________ the air. She’d been the team’s star player all season, (2) ______________ now, doubt crept in. What if she let everyone down?<br><br>Across the locker room, her teammate Sarah (3) ______________ Maria’s pale face. She walked over and gave her a reassuring squeeze on the shoulder. ‘You got this, Maria,” Sarah said confidently. “Remember all the hard work we put in? (4) ______________ yourself and your skills.”<br><br>Maria managed a weak smile. Sarah’s words were a much-needed (5) ______________. They visualized the game plan, picturing each successful play. Slowly, Maria’s fear transformed into focused (6) __________.</p>
+                    <button class="btn-translate-toggle" onclick="toggleTranslationBox('ex142-trans')">BẢN DỊCH TIẾNG VIỆT 🌟</button>
+                    <div class="vietnamese-translation-box" id="ex142-trans">Maria nắm chặt chiếc áo đấu, tim đập thình thịch. Hôm nay là trận chung kết vô địch, không khí căng thẳng bao trùm. Cô ấy lo lắng nhưng người bạn Sarah đã nhận thấy khuôn mặt tái nhợt và động viên cô hãy tin tưởng vào kỹ năng của bản thân. Nỗi sợ hãi dần chuyển hóa thành sự quyết tâm.</div>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q142_1-card">
+                    <span class="badge-number">Câu hỏi 1</span>
+                    <p class="paragraph-text">Vị trí (1):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q142_1', 'B', this)">A. on</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q142_1', 'B', this)">B. in</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q142_1', 'B', this)">C. for</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q142_1', 'B', this)">D. from</div>
+                    </div>
+                    <div class="explanation-panel" id="q142_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Thành ngữ "thick in the air" dùng để diễn tả bầu không khí, cảm xúc (sự căng thẳng, áp lực) đang bao trùm đậm đặc trong không gian phòng thay đồ.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q142_2-card">
+                    <span class="badge-number">Câu hỏi 2</span>
+                    <p class="paragraph-text">Vị trí (2):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q142_2', 'A', this)">A. but</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q142_2', 'A', this)">B. for</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q142_2', 'A', this)">C. or</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q142_2', 'A', this)">D. so</div>
+                    </div>
+                    <div class="explanation-panel" id="q142_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích:</strong> Liên từ thể hiện sự đối lập (Vế trước là cầu thủ ngôi sao, vế sau lại nghi ngờ năng lực bản thân) $\rightarrow$ chọn "but".</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q142_3-card">
+                    <span class="badge-number">Câu hỏi 3</span>
+                    <p class="paragraph-text">Vị trí (3):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q142_3', 'D', this)">A. cared</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q142_3', 'D', this)">B. warned</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q142_3', 'D', this)">C. looked</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q142_3', 'D', this)">D. noticed</div>
+                    </div>
+                    <div class="explanation-panel" id="q142_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: D</h4>
+                        <p><strong>Giải thích:</strong> Động từ ngoại động từ "noticed" mang nghĩa nhận thấy, nhìn ra (khuôn mặt nhợt nhạt của bạn). Loại "looked" vì nhìn ai phải có giới từ "at".</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q142_4-card">
+                    <span class="badge-number">Câu hỏi 4</span>
+                    <p class="paragraph-text">Vị trí (4):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q142_4', 'C', this)">A. Keep</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q142_4', 'C', this)">B. Hurt</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q142_4', 'C', this)">C. Trust</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q142_4', 'C', this)">D. Take</div>
+                    </div>
+                    <div class="explanation-panel" id="q142_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Giải thích:</strong> Câu mệnh lệnh khích lệ tinh thần: "Trust yourself" (Hãy tin tưởng vào chính bản thân bạn và kỹ năng của bạn).</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q142_5-card">
+                    <span class="badge-number">Câu hỏi 5</span>
+                    <p class="paragraph-text">Vị trí (5):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q142_5', 'B', this)">A. remind</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q142_5', 'B', this)">B. reminder</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q142_5', 'B', this)">C. reminded</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q142_5', 'B', this)">D. reminding</div>
+                    </div>
+                    <div class="explanation-panel" id="q142_5-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Đứng sau tính từ hạn định "a much-needed" ta cần điền một danh từ số ít $\rightarrow$ "reminder" (lời nhắc nhở, sự thức tỉnh tinh thần cực kỳ cần thiết).</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q142_6-card">
+                    <span class="badge-number">Câu hỏi 6</span>
+                    <p class="paragraph-text">Vị trí (6):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q142_6', 'B', this)">A. experience</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q142_6', 'B', this)">B. determination</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q142_6', 'B', this)">C. beauty</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q142_6', 'B', this)">D. trust</div>
+                    </div>
+                    <div class="explanation-panel" id="q142_6-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Dựa theo sự chuyển biến tâm lý tích cực ở cuối bài: Nỗi sợ hãi đã chuyển hóa thành "focused determination" (sự quyết tâm cao độ tập trung vào trận đấu).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-zone-5" class="exercise-view-block">
+            <div class="split-left">
+                <h2 class="passage-title">🏡 Escape from City Hustle</h2>
+                <div class="section-content-box" id="ex143-passage-box">
+                    <p class="paragraph-text">Last summer, I embarked (1) ___________ a memorable trip to the beautiful countryside. It was an escape from the hustle and bustle of the city, and a journey filled with breathtaking natural beauty. The (2) ___________ began with a long drive through winding roads that led us deeper into the heart of nature.<br><br>We arrived at a charming little village with traditional cottages, surrounded by lush green hills and picturesque landscapes. The air was crisp and clean, a refreshing change from the pollution of the city. We (3) ___________ the countryside by taking long walks through the meadows and hiking up the hills to catch panoramic views of the valley. We visited a pristine lake (4) __________ we had a chance to swim and bask in the sun. It was a surreal experience as I felt (5) ___________ close to nature.<br><br>One of the highlights of the trip was the local food. We enjoyed traditional dishes prepared by the villagers, which included freshly harvested vegetables and fruits. The flavors were authentic and delicious, a true taste of the countryside. The evenings were magical as we sat around a bonfire, (6) ___________ stories and enjoying the starry night sky. It was a perfect way to end each day of exploration.</p>
+                    <button class="btn-translate-toggle" onclick="toggleTranslationBox('ex143-trans')">BẢN DỊCH TIẾNG VIỆT 🌟</button>
+                    <div class="vietnamese-translation-box" id="ex143-trans">Mùa hè năm ngoái, tôi đã bắt đầu một chuyến đi đáng nhớ về vùng nông thôn xinh đẹp để trốn khỏi sự hối hả và nhộn nhịp của thành phố... Chúng tôi khám phá vùng nông thôn bằng cách đi dạo qua những đồng cỏ, ghé thăm hồ nước hoang sơ và cùng nhau chia sẻ câu chuyện bên bếp lửa.</div>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q143_1-card">
+                    <span class="badge-number">Câu hỏi 1</span>
+                    <p class="paragraph-text">Vị trí (1):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q143_1', 'A', this)">A. on</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q143_1', 'A', this)">B. in</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q143_1', 'A', this)">C. at</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q143_1', 'A', this)">D. for</div>
+                    </div>
+                    <div class="explanation-panel" id="q143_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích:</strong> Cụm động từ cố định đi liền với giới từ: "embark on a trip/journey" (bắt đầu dấn thân vào một chuyến đi/hành trình đáng nhớ).</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q143_2-card">
+                    <span class="badge-number">Câu hỏi 2</span>
+                    <p class="paragraph-text">Vị trí (2):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q143_2', 'D', this)">A. excursion</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q143_2', 'D', this)">B. voyage</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q143_2', 'D', this)">C. cruise</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q143_2', 'D', this)">D. journey</div>
+                    </div>
+                    <div class="explanation-panel" id="q143_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: D</h4>
+                        <p><strong>Giải thích:</strong> Từ đồng nghĩa tương đương cốt lõi lặp lại ý của từ "journey" đã được tác giả nêu ra ngay tại câu văn phía trước của mạch bài đọc.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q143_3-card">
+                    <span class="badge-number">Câu hỏi 3</span>
+                    <p class="paragraph-text">Vị trí (3):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q143_3', 'B', this)">A. looked into</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q143_3', 'B', this)">B. explored</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q143_3', 'B', this)">C. found</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q143_3', 'B', this)">D. discovered</div>
+                    </div>
+                    <div class="explanation-panel" id="q143_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Việc đi bộ leo đồi để thưởng ngoạn toàn cảnh thung lũng mang ý nghĩa hành động "explore" (khám phá, thám hiểm thiên nhiên).</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q143_4-card">
+                    <span class="badge-number">Câu hỏi 4</span>
+                    <p class="paragraph-text">Vị trí (4):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q143_4', 'B', this)">A. which</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q143_4', 'B', this)">B. where</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q143_4', 'B', this)">C. who</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q143_4', 'B', this)">D. when</div>
+                    </div>
+                    <div class="explanation-panel" id="q143_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Trạng từ quan hệ chỉ địa điểm "where" đứng sau và thay thế bổ nghĩa cho danh từ địa điểm hồ nước "pristine lake".</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q143_5-card">
+                    <span class="badge-number">Câu hỏi 5</span>
+                    <p class="paragraph-text">Vị trí (5):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q143_5', 'C', this)">A. as</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q143_5', 'C', this)">B. too</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q143_5', 'C', this)">C. so</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q143_5', 'C', this)">D. such</div>
+                    </div>
+                    <div class="explanation-panel" id="q143_5-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Giải thích:</strong> Cấu trúc tăng cường sắc thái biểu đạt của tính từ: "so + adj + to someone/something" $\rightarrow$ "so close to nature" (vô cùng gần gũi với thiên nhiên).</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q143_6-card">
+                    <span class="badge-number">Câu hỏi 6</span>
+                    <p class="paragraph-text">Vị trí (6):</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q143_6', 'B', this)">A. share</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q143_6', 'B', this)">B. sharing</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q143_6', 'B', this)">C. to share</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q143_6', 'B', this)">D. shares</div>
+                    </div>
+                    <div class="explanation-panel" id="q143_6-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Mệnh đề phân từ rút gọn đồng chủ ngữ diễn tả hành động đang thực hiện song hành liên tiếp: vừa ngồi quanh đống lửa vừa chia sẻ chuyện kể $\rightarrow$ dùng dạng V-ing "sharing".</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-zone-6" class="exercise-view-block">
+            <div class="split-left">
+                <h2 class="passage-title">🌌 Overcoming Public Speaking Fear</h2>
+                <div class="section-content-box" id="ex151-passage-box">
+                    <p class="paragraph-text">I still remember the first time I delivered a presentation in front of my class. The mere thought of standing before all my classmates and speaking filled me with anxiety.<br><br>My first presentation topic was my favorite hobby, astronomy. I spent days researching and preparing my slides. I rehearsed my speech in front of the mirror until I could recite it without glancing at my notes. The day of the presentation finally arrived. As I stood before the class, I could feel my heart thumping in my chest. I took a deep breath, looked at my classmates, and began my presentation.<br><br>As I spoke, I found that my nervousness slowly faded away. My classmates listened attentively, and some even asked questions. When I finished, the class broke into applause. I felt a sense of accomplishment and relief. From that day forward, I was no longer afraid of public speaking. I realized that preparation and practice were the keys to a successful presentation.</p>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q151_1-card">
+                    <span class="badge-number">Câu hỏi 1</span>
+                    <p class="paragraph-text">1. What is the main idea of the passage?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q151_1', 'B', this)">A. The speaker's first presentation was on astronomy.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q151_1', 'B', this)">B. The speaker overcame anxiety and fear of public speaking through preparation and practice.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q151_1', 'B', this)">C. The speaker's classmates were uninterested during the presentation.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q151_1', 'B', this)">D. The speaker's favourite hobby is public speaking.</div>
+                    </div>
+                    <div class="explanation-panel" id="q151_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích chi tiết:</strong> Toàn bộ bài đọc tập trung mô tả quy trình tác giả vượt qua sự lo âu, nỗi sợ nói trước đám đông bằng cách chuẩn bị kỹ lưỡng và luyện tập chăm chỉ.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q151_2-card">
+                    <span class="badge-number">Câu hỏi 2</span>
+                    <p class="paragraph-text">2. What did the speaker do to overcome nervousness before the presentation?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q151_2', 'C', this)">A. He rehearsed his speech with his classmates.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q151_2', 'C', this)">B. He avoided eye contact with everyone in the class.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q151_2', 'C', this)">C. He took a deep breath and looked at his classmates.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q151_2', 'C', this)">D. He read the notes repeatedly during the presentation.</div>
+                    </div>
+                    <div class="explanation-panel" id="q151_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Dẫn chứng:</strong> "I took a deep breath, looked at my classmates, and began my presentation."</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q151_3-card">
+                    <span class="badge-number">Câu hỏi 3</span>
+                    <p class="paragraph-text">3. What is one detail not mentioned in the text about the speaker's presentation experience?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q151_3', 'A', this)">A. The classmates were unresponsive.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q151_3', 'A', this)">B. Some classmates asked questions.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q151_3', 'A', this)">C. The class broke into applause.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q151_3', 'A', this)">D. The presentation was on the speaker's least favourite hobby.</div>
+                    </div>
+                    <div class="explanation-panel" id="q151_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích:</strong> Chi tiết này hoàn toàn trái ngược với thực tế bài đọc nêu ra: các bạn học lắng nghe chăm chú ("listened attentively") và vỗ tay khen ngợi ("broke into applause").</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q151_4-card">
+                    <span class="badge-number">Câu hỏi 4</span>
+                    <p class="paragraph-text">4. In the context of the text, what does the word "accomplishment" most likely mean?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q151_4', 'B', this)">A. failure</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q151_4', 'B', this)">B. achievement</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q151_4', 'B', this)">C. anxiety</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q151_4', 'B', this)">D. nervousness</div>
+                    </div>
+                    <div class="explanation-panel" id="q151_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Từ đồng nghĩa:</strong> "accomplishment" có nghĩa là thành quả, thành tựu, hoàn toàn đồng nghĩa với "achievement".</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q151_5-card">
+                    <span class="badge-number">Câu hỏi 5</span>
+                    <p class="paragraph-text">5. Which of the following is NOT implied by the speaker’s experience with public speaking?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q151_5', 'B', this)">A. Fear of public speaking can be overcome.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q151_5', 'B', this)">B. Preparation and practice are unnecessary for successful presentations.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q151_5', 'B', this)">C. The speaker’s academic journey was influenced by this experience.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q151_5', 'B', this)">D. The speaker was initially afraid of public speaking.</div>
+                    </div>
+                    <div class="explanation-panel" id="q151_5-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Ý B tuyên bố sự chuẩn bị là không cần thiết, hoàn toàn sai lệch và mâu thuẫn hoàn toàn với kết luận sâu sắc cuối cùng của tác giả bài viết.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-zone-7" class="exercise-view-block">
+            <div class="split-left">
+                <h2 class="passage-title">🐹 Maya's Jam-packed Schedule</h2>
+                <div class="section-content-box" id="ex152-passage-box">
+                    <p class="paragraph-text">Ever felt overwhelmed by commitments? As a student, Maya did. Between schoolwork, soccer practice, and volunteering at the animal shelter, her schedule was jam-packed. She loved all these activities, but lately, she felt constantly on the go.<br><br>One day, her friend invited her to a weekend camping trip. While the idea of spending time with friends in nature sounded amazing, Maya knew joining would push her over the edge. She worried about falling behind in school and neglecting her responsibilities at the shelter.<br><br>Taking a deep breath, Maya politely declined the invitation. “Thanks so much for inviting me,” she said, “but I’m swamped with school and volunteering right now. Maybe next time?”<br><br>Her friend, understanding and supportive, replied, “No worries at all! Your plate is full, I get it. Text me if you change your mind, though!”<br><br>Saying no wasn’t easy, but Maya felt a weight lift off her shoulders. She realized it was okay to prioritize her commitments and take time for herself. With a clearer head, Maya tackled her workload with renewed energy, knowing she wouldn’t burn out.</p>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q152_1-card">
+                    <span class="badge-number">Câu hỏi 1</span>
+                    <p class="paragraph-text">1. Why is Maya feeling overwhelmed?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q152_1', 'A', this)">A. She has too many commitments.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q152_1', 'A', this)">B. She has a difficult family situation.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q152_1', 'A', this)">C. She doesn’t like her classes.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q152_1', 'A', this)">D. She has a big fight with a friend.</div>
+                    </div>
+                    <div class="explanation-panel" id="q152_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Dẫn chứng:</strong> "Between schoolwork, soccer practice, and volunteering... her schedule was jam-packed."</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q152_2-card">
+                    <span class="badge-number">Câu hỏi 2</span>
+                    <p class="paragraph-text">2. What is Maya’s initial reaction to the camping trip invitation?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q152_2', 'B', this)">A. She immediately says no.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q152_2', 'B', this)">B. She feels excited yet hesitant.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q152_2', 'B', this)">C. She accepts without hesitation.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q152_2', 'B', this)">D. She asks for more details about the trip.</div>
+                    </div>
+                    <div class="explanation-panel" id="q152_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Dẫn chứng:</strong> "While the idea... sounded amazing, Maya knew joining would push her over the edge." (Một mặt thấy thú vị, một mặt lo sợ quá sức chịu đựng).</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q152_3-card">
+                    <span class="badge-number">Câu hỏi 3</span>
+                    <p class="paragraph-text">3. Why does Maya ultimately decline the invitation?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q152_3', 'C', this)">A. She dislikes camping.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q152_3', 'C', this)">B. She doesn’t want to spend time with her friend.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q152_3', 'C', this)">C. She worries about her workload and responsibilities.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q152_3', 'C', this)">D. She has a prior commitment she forgot about.</div>
+                    </div>
+                    <div class="explanation-panel" id="q152_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Dẫn chứng:</strong> "She worried about falling behind in school and neglecting her responsibilities..."</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q152_4-card">
+                    <span class="badge-number">Câu hỏi 4</span>
+                    <p class="paragraph-text">4. How does Maya’s friend react to her declining the invitation?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q152_4', 'B', this)">A. They get angry and upset.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q152_4', 'B', this)">B. They are understanding and supportive.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q152_4', 'B', this)">C. They try to convince her to come anyway.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q152_4', 'B', this)">D. They stop talking to Maya.</div>
+                    </div>
+                    <div class="explanation-panel" id="q152_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Dẫn chứng:</strong> Người bạn trả lời: "No worries at all! Your plate is full, I get it." $\rightarrow$ Rất thấu hiểu và ủng hộ.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q152_5-card">
+                    <span class="badge-number">Câu hỏi 5</span>
+                    <p class="paragraph-text">5. What does Maya realize after saying no?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q152_5', 'D', this)">A. That she should have gone on the trip.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q152_5', 'D', this)">B. That her friend doesn’t care about her.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q152_5', 'D', this)">C. That she needs to take a break from school.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q152_5', 'D', this)">D. That it’s important to prioritize commitments.</div>
+                    </div>
+                    <div class="explanation-panel" id="q152_5-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: D</h4>
+                        <p><strong>Dẫn chứng:</strong> "She realized it was okay to prioritize her commitments and take time for herself."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-zone-8" class="exercise-view-block">
+            <div class="split-left">
+                <h2 class="passage-title">🇬🇧 Weekend Getaway to London</h2>
+                <div class="section-content-box" id="ex153-passage-box">
+                    <p class="paragraph-text">For the last few months, I have spent every Saturday in my flat and have done nothing more exciting than working at home, reading the newspapers and watching television. I had begun feeling bored with this and so, last weekend I thought I would do something different. I rang up several of my friends and we decided to go to London for the day. I was really excited as I hadn't been to London since I was ten.<br><br>We decided to go by coach as this was by far the cheapest means of transport that was available even though it meant that we needed to get up very early. Once in London, we decided to take a sightseeing tour as we wanted to see some of the famous buildings. After the tour, we bought some sandwiches and ate them in a small park. In the afternoon, two of us went shopping and the others went to the theater. We met up again at 6:30 p.m. and went to a small restaurant in Soho. The meal was really good but, unfortunately, it took much longer than we had expected. We had to get a taxi back to the coach station. Luckily, we got there just two minutes before our coach left.</p>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q153_1-card">
+                    <span class="badge-number">Câu hỏi 1</span>
+                    <p class="paragraph-text">1. According to the passage, the writer ___________</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q153_1', 'B', this)">A. spent his last weekend at home.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q153_1', 'B', this)">B. went to London with some of his friends.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q153_1', 'B', this)">C. has lived in London for ten years.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q153_1', 'B', this)">D. feels bored with his life.</div>
+                    </div>
+                    <div class="explanation-panel" id="q153_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Dẫn chứng:</strong> "I rang up several of my friends and we decided to go to London..."</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q153_2-card">
+                    <span class="badge-number">Câu hỏi 2</span>
+                    <p class="paragraph-text">2. He felt so excited about going to London because ___________</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q153_2', 'D', this)">A. He hadn't been there before.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q153_2', 'D', this)">B. He hadn't been there for ten years.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q153_2', 'D', this)">C. He went there ten years ago.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q153_2', 'D', this)">D. He hadn't been there for a long time.</div>
+                    </div>
+                    <div class="explanation-panel" id="q153_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: D</h4>
+                        <p><strong>Giải thích:</strong> Bài viết nêu tác giả không tới London từ khi 10 tuổi $\rightarrow$ Paraphrase tương đồng nghĩa là đã một khoảng thời gian rất dài chưa đi tới đây.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q153_3-card">
+                    <span class="badge-number">Câu hỏi 3</span>
+                    <p class="paragraph-text">3. Why did they decide to go by coach?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q153_3', 'C', this)">A. Because it was available.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q153_3', 'C', this)">B. Because they wanted to start early.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q153_3', 'C', this)">C. Because other means of transport were more expensive.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q153_3', 'C', this)">D. Because it was one of the most efficient means of transport.</div>
+                    </div>
+                    <div class="explanation-panel" id="q153_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Giải thích:</strong> Vì coach là phương tiện rẻ nhất ("cheapest means"), đồng nghĩa các loại xe/phương tiện di chuyển khác đắt đỏ hơn.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q153_4-card">
+                    <span class="badge-number">Câu hỏi 4</span>
+                    <p class="paragraph-text">4. Which of the following is true?</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q153_4', 'B', this)">A. They all went shopping before going to the theater.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q153_4', 'B', this)">B. They took a sightseeing tour of London and then had lunch.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q153_4', 'B', this)">C. They had lunch in a small restaurant.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q153_4', 'B', this)">D. They left the city at 6:30 p.m.</div>
+                    </div>
+                    <div class="explanation-panel" id="q153_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Dẫn chứng:</strong> Họ đi "sightseeing tour", sau đó mua bánh mì ăn tại công viên (lunch). Loại C vì họ ăn ở công viên, loại D vì 6h30 họ mới gặp lại nhau để đi ăn tối chứ chưa rời thành phố.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q153_5-card">
+                    <span class="badge-number">Câu hỏi 5</span>
+                    <p class="paragraph-text">5. It can be inferred from the text that ___________</p>
+                    <div class="options-container">
+                        <div class="option-node" data-val="A" onclick="handleMCQSelection('q153_5', 'A', this)">A. they nearly missed the coach because of the meal.</div>
+                        <div class="option-node" data-val="B" onclick="handleMCQSelection('q153_5', 'A', this)">B. they didn't enjoy the meal in the restaurant very much.</div>
+                        <div class="option-node" data-val="C" onclick="handleMCQSelection('q153_5', 'A', this)">C. the coach had already left when they got to the station.</div>
+                        <div class="option-node" data-val="D" onclick="handleMCQSelection('q153_5', 'A', this)">D. they missed the coach and had to take a taxi back</div>
+                    </div>
+                    <div class="explanation-panel" id="q153_5-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích:</strong> Vì bữa ăn mất nhiều thời gian hơn dự kiến, họ phải đi taxi ra bến xe và chỉ đến trước khi xe chạy đúng 2 phút $\rightarrow$ ngụ ý suýt nữa lỡ chuyến xe.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-zone-9" class="exercise-view-block">
+            <div class="split-left">
+                <h2 class="passage-title">🦁 Summer Course in Singapore</h2>
+                <div class="section-content-box" id="ex161-passage-box">
+                    <p class="paragraph-text">I went to Singapore on my own for a ten-day summer course. There were about 15 students from China, Malaysia, Cambodia, India, and Iran in the course. <strong>(1) ___ [Blank 1] ___</strong>. On the second day of the course, we had special team-building activities. We worked in groups of five from different countries <strong>(2) ___ [Blank 2] ___</strong>. The time we spent doing the activity together was really memorable. We discussed how to find the place. After four hours of walking, taking the bus and metro as well as getting lost, we arrived at the destination.<br><br>Over the remaining days, we attended English lessons. We worked on projects and culture workshops. We discussed and shared our own traditions and customs. During the time here, we also visited the Botanic Gardens, took photos in the orchard garden and explored Chinatown <strong>(3) ___ [Blank 3] ___</strong>. At the weekend, we went to the Discovery Centre. We were impressed by the attraction and interactive gallery as well as the brilliant learning experiences we had. <strong>(4) ___ [Blank 4] ___</strong> for being able to go without my parents and leaving my comfort zone.</p>
+                    <p style="margin-top:15px; color:#777; font-size:13px;"><em>Danh sách các câu chèn sẵn có:</em><br>A. to search for a location on a map that the school staff gave us<br>B. where we bought souvenirs for our parents and friends<br>C. We were all so surprised about the cleanliness and discipline of the country<br>D. After the trip, I felt proud of myself</p>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q161_1-card">
+                    <span class="badge-number">(1) Chọn câu khớp chèn vào vị trí số 1:</span>
+                    <select class="gamified-dropdown" id="q161_1-select" onchange="handleDropdownChecking('q161_1', 'C')">
+                        <option value="">-- Click để hiển thị các câu chèn --</option>
+                        <option value="A">Câu A</option>
+                        <option value="B">Câu B</option>
+                        <option value="C">Câu C</option>
+                        <option value="D">Câu D</option>
+                    </select>
+                    <div class="explanation-panel" id="q161_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Giải thích:</strong> Câu C điền vào vị trí này để diễn tả cảm xúc ngỡ ngàng ấn tượng đầu tiên về kỷ luật và sự sạch sẽ khi vừa bước chân đến Singapore.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q161_2-card">
+                    <span class="badge-number">(2) Chọn câu khớp chèn vào vị trí số 2:</span>
+                    <select class="gamified-dropdown" id="q161_2-select" onchange="handleDropdownChecking('q161_2', 'A')">
+                        <option value="">-- Click để hiển thị các câu chèn --</option>
+                        <option value="A">Câu A</option>
+                        <option value="B">Câu B</option>
+                        <option value="C">Câu C</option>
+                        <option value="D">Câu D</option>
+                    </select>
+                    <div class="explanation-panel" id="q161_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích:</strong> Câu A bổ nghĩa cho mục đích hoạt động team-building chia nhóm để tìm kiếm địa điểm trên bản đồ.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q161_3-card">
+                    <span class="badge-number">(3) Chọn câu khớp chèn vào vị trí số 3:</span>
+                    <select class="gamified-dropdown" id="q161_3-select" onchange="handleDropdownChecking('q161_3', 'B')">
+                        <option value="">-- Click để hiển thị các câu chèn --</option>
+                        <option value="A">Câu A</option>
+                        <option value="B">Câu B</option>
+                        <option value="C">Câu C</option>
+                        <option value="D">Câu D</option>
+                    </select>
+                    <div class="explanation-panel" id="q161_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Mệnh đề quan hệ "where we bought..." đính kèm phía sau địa danh Chinatown để nói về việc mua quà lưu niệm tại đây.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q161_4-card">
+                    <span class="badge-number">(4) Chọn câu khớp chèn vào vị trí số 4:</span>
+                    <select class="gamified-dropdown" id="q161_4-select" onchange="handleDropdownChecking('q161_4', 'D')">
+                        <option value="">-- Click để hiển thị các câu chèn --</option>
+                        <option value="A">Câu A</option>
+                        <option value="B">Câu B</option>
+                        <option value="C">Câu C</option>
+                        <option value="D">Câu D</option>
+                    </select>
+                    <div class="explanation-panel" id="q161_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: D</h4>
+                        <p><strong>Giải thích:</strong> Câu D đóng vai trò kết bài, bộc lộ sự tự hào của bản thân khi bước ra khỏi vùng an toàn.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-zone-10" class="exercise-view-block">
+            <div class="split-left">
+                <h2 class="passage-title">🗣️ Public Speaking for Teenagers</h2>
+                <div class="section-content-box" id="ex162-passage-box">
+                    <p class="paragraph-text"><strong>(1) ___ [Blank 1] ___</strong>. The thought of standing in front of a crowd and speaking can be nerve-wracking. However, there are many benefits to overcoming this fear. Public speaking allows teens to develop their confidence, communication skills, and critical thinking abilities.<br><br>One way public speaking helps teens is by boosting their confidence. Presenting information to a group requires preparation and practice. This process can help teens develop <strong>(2) ___ [Blank 2] ___</strong>. Additionally, public speaking hones communication skills. Teens learn to organize their thoughts, speak clearly, and <strong>(3) ___ [Blank 3] ___</strong>.<br><br>Public speaking also encourages critical thinking. When preparing a speech, teens need to research their topic, analyze information, and form an argument. This process helps them develop a deeper understanding of the subject matter. While public speaking can be challenging, it is a valuable skill for teens to develop. <strong>(4) ___ [Blank 4] ___</strong>.</p>
+                    <p style="margin-top:15px; color:#777; font-size:13px;"><em>Danh sách các câu chèn sẵn có:</em><br>A. a sense of accomplishment and self-belief<br>B. It can benefit them not only in school but also in their future careers and personal lives<br>C. use effective body language to engage an audience<br>D. Many teenagers dread public speaking</p>
+                </div>
+            </div>
+            <div class="split-right">
+                <div class="exercise-card" id="q162_1-card">
+                    <span class="badge-number">(1) Chọn câu khớp chèn vào vị trí số 1:</span>
+                    <select class="gamified-dropdown" id="q162_1-select" onchange="handleDropdownChecking('q162_1', 'D')">
+                        <option value="">-- Click để hiển thị các câu chèn --</option>
+                        <option value="A">Câu A</option>
+                        <option value="B">Câu B</option>
+                        <option value="C">Câu C</option>
+                        <option value="D">Câu D</option>
+                    </select>
+                    <div class="explanation-panel" id="q162_1-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: D</h4>
+                        <p><strong>Giải thích:</strong> Câu D đưa lên đầu đoạn để làm câu chủ đề (Topic sentence), nêu thực trạng nhiều học sinh sợ nói trước đám đông.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q162_2-card">
+                    <span class="badge-number">(2) Chọn câu khớp chèn vào vị trí số 2:</span>
+                    <select class="gamified-dropdown" id="q162_2-select" onchange="handleDropdownChecking('q162_2', 'A')">
+                        <option value="">-- Click để hiển thị các câu chèn --</option>
+                        <option value="A">Câu A</option>
+                        <option value="B">Câu B</option>
+                        <option value="C">Câu C</option>
+                        <option value="D">Câu D</option>
+                    </select>
+                    <div class="explanation-panel" id="q162_2-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: A</h4>
+                        <p><strong>Giải thích:</strong> Câu A bổ nghĩa cho cụm từ nói về cảm giác gặt hái thành công và niềm tin vào bản thân.</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q162_3-card">
+                    <span class="badge-number">(3) Chọn câu khớp chèn vào vị trí số 3:</span>
+                    <select class="gamified-dropdown" id="q162_3-select" onchange="handleDropdownChecking('q162_3', 'C')">
+                        <option value="">-- Click để hiển thị các câu chèn --</option>
+                        <option value="A">Câu A</option>
+                        <option value="B">Câu B</option>
+                        <option value="C">Câu C</option>
+                        <option value="D">Câu D</option>
+                    </select>
+                    <div class="explanation-panel" id="q162_3-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: C</h4>
+                        <p><strong>Giải thích:</strong> Cấu trúc song hành động từ nguyên mẫu: "organize... speak clearly, and use effective body language".</p>
+                    </div>
+                </div>
+
+                <div class="exercise-card" id="q162_4-card">
+                    <span class="badge-number">(4) Chọn câu khớp chèn vào vị trí số 4:</span>
+                    <select class="gamified-dropdown" id="q162_4-select" onchange="handleDropdownChecking('q162_4', 'B')">
+                        <option value="">-- Click để hiển thị các câu chèn --</option>
+                        <option value="A">Câu A</option>
+                        <option value="B">Câu B</option>
+                        <option value="C">Câu C</option>
+                        <option value="D">Câu D</option>
+                    </select>
+                    <div class="explanation-panel" id="q162_4-explain">
+                        <h4>🎯 ĐÁP ÁN ĐÚNG: B</h4>
+                        <p><strong>Giải thích:</strong> Câu B đúc kết lại giá trị bền vững và lợi ích to lớn của kỹ năng thuyết trình cho tương lai.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="sticky-footer">
+        <button class="btn-global-submit" onclick="showDashboardResultsSummary()">NỘP BÀI KIỂM TRA 🚀</button>
+    </div>
+
+    <div id="dashboard-modal">
+        <div class="modal-body">
+            <h2 style="font-size: 24px; color: var(--primary);">🏆 KẾT QUẢ INTERACTIVE MOCK TEST 🏆</h2>
+            <div class="score-badge" id="modal-score-view">0/40</div>
+            <h3 id="modal-feedback-title" style="margin-bottom: 10px; color: #E67E22; font-size: 20px;">Làm tốt lắm!</h3>
+            <p id="modal-feedback-desc" style="color: #555; font-size: 14.5px; line-height: 1.6;">Hãy rà soát kỹ các đáp án sai bằng dải biểu tượng bài tập phía trên nhé!</p>
+            <button class="btn-close-dashboard" onclick="closeDashboard()">Xem chi tiết đáp án</button>
+        </div>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function triggerSoundEffect(isCorrect) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+
+            if (isCorrect) {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } else {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(80, audioCtx.currentTime + 0.35);
+                gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.35);
+            }
+        }
+
+        const canvas = document.getElementById('confetti-layer');
+        const ctx = canvas.getContext('2d');
+        let confettiPieces = [], runningConfetti = false;
+
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+        function emitConfettiShower() {
+            runningConfetti = true; confettiPieces = [];
+            for (let i = 0; i < 100; i++) {
+                confettiPieces.push({
+                    x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
+                    r: Math.random() * 5 + 4, d: Math.random() * canvas.height,
+                    color: `hsl(${Math.random() * 360}, 95%, 65%)`, tilt: Math.random() * 8 - 4,
+                    tiltAngleIncremental: Math.random() * 0.05 + 0.02, tiltAngle: 0
+                });
+            }
+            animateConfettiFrame();
+            setTimeout(() => { runningConfetti = false; }, 4000);
+        }
+
+        function animateConfettiFrame() {
+            if (!runningConfetti && confettiPieces.length === 0) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            confettiPieces.forEach((p, index) => {
+                p.tiltAngle += p.tiltAngleIncremental; p.y += (Math.cos(p.d) + 3.5 + p.r / 2) / 2; p.x += Math.sin(p.tiltAngle);
+                ctx.beginPath(); ctx.lineWidth = p.r; ctx.strokeStyle = p.color;
+                ctx.moveTo(p.x + p.tilt + p.r / 2, p.y); ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2); ctx.stroke();
+                if (p.y > canvas.height) {
+                    if (runningConfetti) {
+                        confettiPieces[index] = { x: Math.random() * canvas.width, y: -20, r: p.r, d: p.d, color: p.color, tilt: p.tilt, tiltAngleIncremental: p.tiltAngleIncremental, tiltAngle: p.tiltAngle };
+                    } else { confettiPieces.splice(index, 1); }
+                }
+            });
+            requestAnimationFrame(animateConfettiFrame);
+        }
+
+        let totalTimeSeconds = 25 * 60, clockRunning = false, countdownIntervalId = null;
+        function triggerClockSystem() {
+            const toggleBtn = document.getElementById('timer-toggle-btn');
+            if (clockRunning) {
+                clearInterval(countdownIntervalId); clockRunning = false;
+                toggleBtn.innerText = "TIẾP TỤC"; toggleBtn.style.background = "var(--secondary)";
+            } else {
+                clockRunning = true; toggleBtn.innerText = "TẠM DỪNG"; toggleBtn.style.background = "#FF7675";
+                countdownIntervalId = setInterval(() => {
+                    if (totalTimeSeconds > 0) {
+                        totalTimeSeconds--;
+                        let minutes = Math.floor(totalTimeSeconds / 60), seconds = totalTimeSeconds % 60;
+                        document.getElementById('clock-view').innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    } else { clearInterval(countdownIntervalId); }
+                }, 1000);
+            }
+        }
+
+        function activateSection(index) {
+            document.querySelectorAll('.exercise-view-block').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`section-zone-${index}`).classList.add('active');
+            document.querySelectorAll('.nav-tab-btn')[index - 1].classList.add('active');
+        }
+
+        document.querySelectorAll('.split-left').forEach(panel => {
+            panel.addEventListener('mouseup', function() {
+                const selection = window.getSelection();
+                if (!selection.isCollapsed && selection.toString().trim().length > 0) {
+                    const textRange = selection.getRangeAt(0);
+                    const wrapperSpan = document.createElement('span');
+                    wrapperSpan.className = 'highlight-pastel';
+                    try { textRange.surroundContents(wrapperSpan); } catch (err) {}
+                    selection.removeAllRanges();
+                }
+            });
+        });
+
+        function toggleTranslationBox(boxId) {
+            const transNode = document.getElementById(boxId);
+            transNode.style.display = (transNode.style.display === 'block') ? 'none' : 'block';
+        }
+
+        function locatePassageElement(elementId) {
+            const item = document.getElementById(elementId);
+            if (item) {
+                item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                item.style.backgroundColor = '#FFF2CC';
+                setTimeout(() => { item.style.backgroundColor = '#FFF'; }, 1500);
+            }
+        }
+
+        const databaseRecord = {};
+        const officialKeys = {
+            'q131_1': 'A', 'q131_2': 'B', 'q131_3': 'C', 'q131_4': 'A',
+            'q132_1': 'A', 'q132_2': 'B', 'q132_3': 'B', 'q132_4': 'C',
+            'q141_1': 'D', 'q141_2': 'A', 'q141_3': 'A', 'q141_4': 'C', 'q141_5': 'B', 'q141_6': 'D',
+            'q142_1': 'B', 'q142_2': 'A', 'q142_3': 'D', 'q142_4': 'C', 'q142_5': 'B', 'q142_6': 'B',
+            'q143_1': 'A', 'q143_2': 'D', 'q143_3': 'B', 'q143_4': 'B', 'q143_5': 'C', 'q143_6': 'B',
+            'q151_1': 'B', 'q151_2': 'C', 'q151_3': 'A', 'q151_4': 'B', 'q151_5': 'B',
+            'q152_1': 'A', 'q152_2': 'B', 'q152_3': 'C', 'q152_4': 'B', 'q152_5': 'D',
+            'q153_1': 'B', 'q153_2': 'D', 'q153_3': 'C', 'q153_4': 'B', 'q153_5': 'A',
+            'q161_1': 'C', 'q161_2': 'A', 'q161_3': 'B', 'q161_4': 'D',
+            'q162_1': 'D', 'q162_2': 'A', 'q162_3': 'C', 'q162_4': 'B'
+        };
+
+        function refreshMasterProgressBar() {
+            let userAnswersCount = Object.keys(databaseRecord).length;
+            document.getElementById('master-progress-fill').style.width = `${(userAnswersCount / 43) * 100}%`;
+        }
+
+        function handleMCQSelection(questionId, correctOption, elementNode) {
+            if (databaseRecord[questionId] !== undefined) return;
+            const container = elementNode.parentElement;
+            const wholeCard = document.getElementById(`${questionId}-card`);
+
+            if (correctOption === officialKeys[questionId]) {
+                triggerSoundEffect(true); elementNode.classList.add('correct'); databaseRecord[questionId] = true;
+            } else {
+                triggerSoundEffect(false); wholeCard.classList.add('shake-animation');
+                setTimeout(() => wholeCard.classList.remove('shake-animation'), 500);
+                elementNode.classList.add('incorrect');
+                const correctNode = container.querySelector(`[data-val="${officialKeys[questionId]}"]`);
+                if (correctNode) correctNode.classList.add('correct');
+                databaseRecord[questionId] = false;
+            }
+            document.getElementById(`${questionId}-explain`).style.display = 'block';
+            refreshMasterProgressBar();
+        }
+
+        function handleDropdownChecking(questionId, correctChoice) {
+            const selectDropdown = document.getElementById(`${questionId}-select`);
+            if (selectDropdown.value === correctChoice) {
+                triggerSoundEffect(true); selectDropdown.style.borderColor = 'var(--bg-correct)'; databaseRecord[questionId] = true;
+            } else {
+                triggerSoundEffect(false); selectDropdown.style.borderColor = 'var(--bg-wrong)'; databaseRecord[questionId] = false;
+            }
+            document.getElementById(`${questionId}-explain`).style.display = 'block';
+            refreshMasterProgressBar();
+        }
+
+        function showDashboardResultsSummary() {
+            let correctAnswersSum = 0, totalEvaluatedCount = 43;
+            for (let key in databaseRecord) { if (databaseRecord[key] === true) correctAnswersSum++; }
+            document.getElementById('modal-score-view').innerText = `${correctAnswersSum}/${totalEvaluatedCount}`;
+            const titleNode = document.getElementById('modal-feedback-title');
+            if (correctAnswersSum >= 36) { titleNode.innerText = "🥇 XUẤT SẮC ĐẠT BAND READING 9.0! 🥇"; emitConfettiShower(); }
+            else { titleNode.innerText = "🌟 LÀM TỐT LẮM, HÃY CỐ GẮNG ÔN LUYỆN! 🌟"; }
+            document.getElementById('dashboard-modal').style.display = 'flex';
+        }
+
+        function closeDashboard() { document.getElementById('dashboard-modal').style.display = 'none'; }
+    </script>
+</body>
+</html>
